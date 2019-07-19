@@ -6,10 +6,15 @@ const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const cors = require('koa2-cors');
 
+const enforceHttps = require('koa-sslify').default;
+
 const lists = require('./routes/lists')
 
 // error handler
 onerror(app)
+
+// Force HTTPS on all page
+app.use(enforceHttps());
 
 // middlewares
 app.use(bodyparser({
@@ -21,7 +26,8 @@ app.use(logger())
 // 跨域
 app.use(cors({
   origin: function (ctx) {
-    return 'http://localhost:9000';
+    // return 'http://localhost:8081';
+    return '*'
   },
   exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
   maxAge: 5,
@@ -29,6 +35,8 @@ app.use(cors({
   allowMethods: ['GET', 'POST', 'DELETE'],
   allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
 }))
+
+// app.use(cors())
 
 // logger
 app.use(async (ctx, next) => {
